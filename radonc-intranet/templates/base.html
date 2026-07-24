@@ -1,0 +1,75 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ SITE_NAME }}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  {% block extra_head %}{% endblock %}
+</head>
+<body {% block body_attrs %}{% endblock %}>
+{% include "core/_icons.html" %}
+<div class="shell">
+
+  <aside class="sidebar no-print">
+    <a class="wordmark" href="{% url 'core:home' %}">
+      <span class="org">{{ ORG_NAME }}</span>
+      <span class="site">{{ SITE_NAME }}</span>
+    </a>
+    <hr class="beamline">
+    <nav class="nav" aria-label="Main navigation">
+      <a class="nav-link {% if request.resolver_match.view_name == 'core:home' %}active{% endif %}" href="{% url 'core:home' %}">
+        <svg class="nav-icon"><use href="#icon-home"/></svg> Home
+      </a>
+      {% for section, feats in nav_sections %}
+        <div class="nav-section">{{ section }}</div>
+        {% for f in feats %}
+          <a class="nav-link {% if request.resolver_match.view_name == f.url_name %}active{% endif %}" href="{% url f.url_name %}">
+            <svg class="nav-icon"><use href="#icon-{{ f.icon }}"/></svg> {{ f.title }}
+          </a>
+          {% for item in f.nav_items %}
+            <a class="nav-sub {% if request.resolver_match.view_name == item.url_name %}active{% endif %}" href="{% url item.url_name %}">{{ item.label }}</a>
+          {% endfor %}
+        {% endfor %}
+      {% endfor %}
+      {% if user.is_staff %}
+        <div class="nav-section">Administration</div>
+        <a class="nav-link" href="{% url 'admin:index' %}">
+          <svg class="nav-icon"><use href="#icon-settings"/></svg> Site admin
+        </a>
+      {% endif %}
+    </nav>
+    <div class="sidebar-foot">
+      Internal use only · Minimum-necessary PHI<br>
+      <a href="{% url 'admin:index' %}">Manage content</a>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar no-print">
+      <form class="search" action="{% url 'core:search' %}" method="get" role="search">
+        <svg><use href="#icon-search"/></svg>
+        <input type="search" name="q" value="{{ q|default:'' }}" placeholder="Search links, contacts…" aria-label="Search the intranet">
+      </form>
+      <div class="spacer"></div>
+      {% if user.is_authenticated %}
+        <span class="who">Signed in as <strong>{{ user.get_full_name|default:user.username }}</strong></span>
+        <form action="{% url 'logout' %}" method="post" style="margin:0">{% csrf_token %}
+          <button class="btn ghost small" type="submit">Sign out</button>
+        </form>
+      {% endif %}
+    </header>
+
+    <main class="content">
+      {% if messages %}
+        {% for m in messages %}<div class="flash {{ m.tags }}">{{ m }}</div>{% endfor %}
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<script src="{% static 'js/app.js' %}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

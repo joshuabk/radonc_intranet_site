@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Huddle Board · {{ SITE_NAME }}{% endblock %}
+{% block body_attrs %}data-autorefresh="1"{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="actions no-print">
+    <span class="clock" id="clock"></span>
+    <button class="btn ghost small" type="button" id="display-toggle" title="Large type for wall monitors; auto-refreshes every 5 minutes">Display mode</button>
+    <button class="btn ghost small no-print" type="button" onclick="window.print()">Print</button>
+  </div>
+  <div class="eyebrow">Daily huddle</div>
+  <h1>Physics huddle board</h1>
+  <p class="sub">{{ today|date:"l, F j, Y" }} — new starts and special procedures for the week. Tip: add <span class="code">?display=1</span> to the URL for wall monitors.</p>
+</div>
+
+<div class="grid cols-2" style="margin-bottom:18px">
+  <div class="card">
+    <div class="card-head"><h2><span class="dot warn"></span>Starting today ({{ starts_today|length }})</h2></div>
+    <div class="card-body flush">
+      {% if starts_today %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>MRN</th><th>Site / Technique</th><th>Machine</th><th>Loc</th><th>Status</th><th>Physicist</th></tr></thead>
+        <tbody>
+          {% for s in starts_today %}
+          <tr>
+            <td class="code">{{ s.mrn }}</td>
+            <td><strong>{{ s.treatment_site }}</strong>{% if s.technique %} <span class="badge teal">{{ s.technique }}</span>{% endif %}{% if s.fractions %} <span class="li-desc">{{ s.fractions }}</span>{% endif %}</td>
+            <td>{{ s.machine|default:"—" }}</td>
+            <td><span class="badge loc">{{ s.location.short_code }}</span></td>
+            <td>{% if s.status == "ready" or s.status == "started" %}<span class="badge teal">{{ s.get_status_display }}</span>{% elif s.status == "held" %}<span class="badge clay">{{ s.get_status_display }}</span>{% else %}<span class="badge gold">{{ s.get_status_display }}</span>{% endif %}</td>
+            <td>{{ s.physicist.initials|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}
+      <div class="empty">No new starts today.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Special procedures this week ({{ specials|length }})</h2></div>
+    <div class="card-body flush">
+      {% if specials %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>When</th><th>Procedure</th><th>Loc</th><th>Physics</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for sp in specials %}
+          <tr>
+            <td>{{ sp.scheduled_for|date:"D n/j G:i" }}</td>
+            <td><strong>{{ sp.procedure }}</strong>{% if sp.mrn %} <span class="code li-desc">{{ sp.mrn }}</span>{% endif %}{% if sp.notes %}<div class="li-desc">{{ sp.notes }}</div>{% endif %}</td>
+            <td><span class="badge loc">{{ sp.location.short_code }}</span></td>
+            <td>{{ sp.physicist.initials|default:"—" }}{% if sp.backup_physicist %} / {{ sp.backup_physicist.initials }}{% endif %}</td>
+            <td>{% if sp.status == "done" %}<span class="badge teal">{{ sp.get_status_display }}</span>{% elif sp.status == "in_prep" %}<span class="badge gold">{{ sp.get_status_display }}</span>{% else %}<span class="badge gray">{{ sp.get_status_display }}</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}
+      <div class="empty">No special procedures scheduled this week.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>New starts — next 7 days ({{ starts_week|length }})</h2></div>
+  <div class="card-body flush">
+    {% if starts_week %}
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Start</th><th>MRN</th><th>Site / Technique</th><th>Machine</th><th>Loc</th><th>Status</th><th>Physicist</th></tr></thead>
+      <tbody>
+        {% for s in starts_week %}
+        <tr>
+          <td><strong>{{ s.start_date|date:"D n/j" }}</strong></td>
+          <td class="code">{{ s.mrn }}</td>
+          <td>{{ s.treatment_site }}{% if s.technique %} <span class="badge teal">{{ s.technique }}</span>{% endif %}</td>
+          <td>{{ s.machine|default:"—" }}</td>
+          <td><span class="badge loc">{{ s.location.short_code }}</span></td>
+          <td>{% if s.status == "ready" %}<span class="badge teal">Ready</span>{% elif s.status == "held" %}<span class="badge clay">On hold</span>{% else %}<span class="badge gold">{{ s.get_status_display }}</span>{% endif %}</td>
+          <td>{{ s.physicist.initials|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="empty">No upcoming new starts entered.
+      <div class="hint">Add them under <a href="{% url 'admin:huddle_newstart_changelist' %}">Huddle → New starts</a>, or run <span class="code">python manage.py seed_demo</span>.</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

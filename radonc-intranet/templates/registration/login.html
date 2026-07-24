@@ -1,0 +1,27 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · {{ SITE_NAME }}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<div class="login-wrap">
+  <form class="login-card" method="post">
+    {% csrf_token %}
+    <div class="org">{{ ORG_NAME }}</div>
+    <h1>{{ SITE_NAME }}</h1>
+    <hr class="beamline">
+    {% if form.errors %}<div class="err">Your username and password didn't match. Try again.</div>{% endif %}
+    <label for="id_username">Username</label>
+    <input type="text" name="username" id="id_username" autofocus autocomplete="username" required>
+    <label for="id_password">Password</label>
+    <input type="password" name="password" id="id_password" autocomplete="current-password" required>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="btn primary" type="submit">Sign in</button>
+    <div class="login-foot">Internal hospital network · Authorized staff only</div>
+  </form>
+</div>
+</body>
+</html>

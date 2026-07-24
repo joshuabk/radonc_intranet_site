@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Link Hub · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Link hub</div>
+  <h1>Applications &amp; documents</h1>
+  <p class="sub">ARIA, MOSAIQ, Citrix, SharePoint, the P: drive, LucidDoc policies &amp; procedures, forms, and reports — all in one place. File-share paths have a copy button.</p>
+</div>
+
+{% if categories %}
+<div class="grid cols-2">
+  {% for cat in categories %}
+    {% if cat.links.all %}
+    <div class="card">
+      <div class="card-head">
+        <h2>{{ cat.name }}</h2>
+        {% if cat.description %}<span class="more" style="color:var(--muted)">{{ cat.description }}</span>{% endif %}
+      </div>
+      <div class="card-body flush">
+        {% for link in cat.links.all %}{% include "linkhub/_linkrow.html" %}{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+</div>
+{% else %}
+<div class="card"><div class="empty">No links yet.
+  <div class="hint">Add categories and links in the <a href="{% url 'admin:linkhub_linkcategory_changelist' %}">site admin</a>, or run <span class="code">python manage.py seed_demo</span> to load examples.</div>
+</div></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Home · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+
+<div class="page-head">
+  <div class="eyebrow">Department home</div>
+  <h1>Good {% now "G" as hour %}{% if hour < "12" %}morning{% elif hour < "17" %}afternoon{% else %}evening{% endif %}, {{ user.first_name|default:user.username }}</h1>
+  <p class="sub">{% now "l, F j, Y" %} — your launchpad for clinical systems, coverage, and today's physics work.</p>
+</div>
+
+{% if announcements %}
+<div class="card" style="margin-bottom:18px">
+  <div class="card-head"><h2>Announcements</h2></div>
+  <div class="card-body">
+    {% for a in announcements %}
+      <div class="announcement {{ a.level }}">
+        <div style="flex:1">
+          <h4>{{ a.title }}</h4>
+          {% if a.body %}<p>{{ a.body|linebreaksbr }}</p>{% endif %}
+        </div>
+        <div class="when">{{ a.created_at|naturalday }}</div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% if quick_links %}
+<div class="card" style="margin-bottom:18px">
+  <div class="card-head">
+    <h2>Quick links</h2>
+    <a class="more" href="{% url 'linkhub:hub' %}">All links →</a>
+  </div>
+  <div class="card-body" style="display:flex;flex-wrap:wrap;gap:8px">
+    {% for link in quick_links %}
+      {% if link.is_unc_path %}
+        <button class="btn ghost small" type="button" data-copy="{{ link.url }}" title="Copy path: {{ link.url }}">{{ link.title }}</button>
+      {% else %}
+        <a class="btn ghost small" href="{{ link.url }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>{{ link.title }}</a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<div class="grid cols-2" style="margin-bottom:18px">
+  <div class="card">
+    <div class="card-head">
+      <h2><span class="dot on"></span>Coverage today</h2>
+      <a class="more" href="{% url 'coverage:home' %}">Full schedule →</a>
+    </div>
+    <div class="card-body flush">
+      {% if todays_coverage %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Site</th><th>Physicist</th><th>Duty</th></tr></thead>
+        <tbody>
+        {% for a in todays_coverage %}
+          <tr>
+            <td>{% if a.location %}<span class="badge loc">{{ a.location.short_code }}</span>{% else %}<span class="badge gray">ALL</span>{% endif %}</td>
+            <td>{{ a.physicist.display_name }}</td>
+            <td>{{ a.get_duty_display }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}
+      <div class="empty">No coverage assignments entered for today.
+        <div class="hint"><a href="{% url 'admin:coverage_coverageassignment_add' %}">Add assignments</a> in the site admin.</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>This week's huddle</h2>
+      <a class="more" href="{% url 'huddle:board' %}">Open board →</a>
+    </div>
+    <div class="card-body flush">
+      {% if upcoming_starts or upcoming_specials %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Date</th><th>Item</th><th>Site</th></tr></thead>
+        <tbody>
+          {% for s in upcoming_starts %}
+          <tr>
+            <td>{{ s.start_date|date:"D n/j" }}</td>
+            <td>New start · {{ s.treatment_site }}{% if s.technique %} <span class="badge teal">{{ s.technique }}</span>{% endif %}</td>
+            <td><span class="badge loc">{{ s.location.short_code }}</span></td>
+          </tr>
+          {% endfor %}
+          {% for sp in upcoming_specials %}
+          <tr>
+            <td>{{ sp.scheduled_for|date:"D n/j" }}</td>
+            <td>Special · {{ sp.procedure }} <span class="badge gold">{{ sp.get_status_display }}</span></td>
+            <td><span class="badge loc">{{ sp.location.short_code }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}
+      <div class="empty">Nothing on the board for the next 7 days.
+        <div class="hint">New starts and special procedures appear here once entered.</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="page-head"><div class="eyebrow">Everything on this site</div></div>
+<div class="grid cols-3">
+  {% for f in features %}
+    <a class="tile" href="{% url f.url_name %}">
+      <div class="tile-icon"><svg><use href="#icon-{{ f.icon }}"/></svg></div>
+      <h3>{{ f.title }}</h3>
+      <p>{{ f.description }}</p>
+    </a>
+  {% endfor %}
+</div>
+
+{% endblock %}

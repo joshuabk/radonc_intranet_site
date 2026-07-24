@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Reports · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Reporting</div>
+  <h1>Reports</h1>
+  <p class="sub">Approved, read-only reports against ARIA and MOSAIQ. Access is limited to the Reporting group; every run is logged.</p>
+</div>
+
+<div class="filterbar">
+  <span><span class="dot {% if aria_connected %}on{% else %}off{% endif %}"></span>ARIA connection: <strong>{% if aria_connected %}configured{% else %}not configured{% endif %}</strong></span>
+  <span><span class="dot {% if mosaiq_connected %}on{% else %}off{% endif %}"></span>MOSAIQ connection: <strong>{% if mosaiq_connected %}configured{% else %}not configured{% endif %}</strong></span>
+</div>
+
+<div class="card">
+  <div class="card-body flush">
+    {% if reports %}
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Report</th><th>Source</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for r in reports %}
+        <tr>
+          <td>
+            <a href="{% url 'reporting:detail' r.slug %}"><strong>{{ r.name }}</strong></a>
+            {% if r.description %}<div class="li-desc">{{ r.description|truncatewords:24 }}</div>{% endif %}
+          </td>
+          <td><span class="badge {% if r.source == 'aria' %}teal{% elif r.source == 'mosaiq' %}gold{% else %}gray{% endif %}">{{ r.get_source_display }}</span></td>
+          <td>{% if r.status == 'live' %}<span class="badge teal">Live</span>{% elif r.status == 'in_dev' %}<span class="badge gold">In development</span>{% else %}<span class="badge gray">{{ r.get_status_display }}</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="empty">No reports defined yet.
+      <div class="hint">Define them under <a href="{% url 'admin:reporting_reportdefinition_changelist' %}">Reporting → Report definitions</a>. Connection setup is documented in <span class="code">docs/REPORTING.md</span>.</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

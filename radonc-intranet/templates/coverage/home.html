@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Coverage · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Coverage</div>
+  <h1>Physics coverage</h1>
+  <p class="sub">Who is covering each site today, the next two weeks of assignments, and links to PTO and on-call calendars. See the <a href="{% url 'coverage:matrix' %}">coverage matrix</a> for who can cover which procedures.</p>
+</div>
+
+<div class="grid cols-2" style="margin-bottom:18px">
+  <div class="card">
+    <div class="card-head"><h2><span class="dot on"></span>Covering today — {{ today|date:"l, N j" }}</h2></div>
+    <div class="card-body flush">
+      {% if current %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Site</th><th>Physicist</th><th>Duty</th><th>Through</th><th>Contact</th></tr></thead>
+        <tbody>
+          {% for a in current %}
+          <tr>
+            <td>{% if a.location %}<span class="badge loc">{{ a.location.short_code }}</span>{% else %}<span class="badge gray">ALL</span>{% endif %}</td>
+            <td><strong>{{ a.physicist.display_name }}</strong></td>
+            <td>{{ a.get_duty_display }}{% if a.notes %} <span class="li-desc">{{ a.notes }}</span>{% endif %}</td>
+            <td>{{ a.end_date|date:"D n/j" }}</td>
+            <td class="code">{{ a.physicist.phone|default:a.physicist.pager|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}
+      <div class="empty">No assignments cover today.
+        <div class="hint"><a href="{% url 'admin:coverage_coverageassignment_add' %}">Add an assignment</a> in the site admin.</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>PTO &amp; on-call calendars</h2></div>
+    <div class="card-body flush">
+      {% for cal in calendars %}
+      <div class="linkrow">
+        <div class="li-icon"><svg><use href="#icon-calendar"/></svg></div>
+        <div class="li-main">
+          <a class="title" href="{{ cal.url }}" target="_blank" rel="noopener">{{ cal.name }}</a>
+          <div class="li-desc">{{ cal.get_kind_display }}{% if cal.description %} · {{ cal.description }}{% endif %}</div>
+        </div>
+        <svg style="width:14px;height:14px;color:var(--muted)"><use href="#icon-external"/></svg>
+      </div>
+      {% empty %}
+      <div class="empty">No calendars linked yet.
+        <div class="hint">Add Outlook/QGenda/Amion links under <a href="{% url 'admin:coverage_externalcalendar_changelist' %}">External calendars</a>.</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-head"><h2>Next two weeks</h2></div>
+  <div class="card-body flush">
+    {% if upcoming %}
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Dates</th><th>Site</th><th>Physicist</th><th>Duty</th><th>Notes</th></tr></thead>
+      <tbody>
+        {% for a in upcoming %}
+        <tr>
+          <td>{{ a.start_date|date:"D n/j" }} – {{ a.end_date|date:"D n/j" }}</td>
+          <td>{% if a.location %}<span class="badge loc">{{ a.location.short_code }}</span>{% else %}<span class="badge gray">ALL</span>{% endif %}</td>
+          <td>{{ a.physicist.display_name }}</td>
+          <td>{{ a.get_duty_display }}</td>
+          <td>{{ a.notes|default:"—" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="empty">No upcoming assignments in the next 14 days.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

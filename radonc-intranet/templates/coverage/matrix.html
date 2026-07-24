@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Coverage Matrix · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Coverage</div>
+  <h1>Coverage matrix</h1>
+  <p class="sub">Which physicists can cover which procedures, filterable by location. A capability with no listed locations applies system-wide.</p>
+</div>
+
+<form class="filterbar" method="get">
+  <label for="loc">Location</label>
+  <select id="loc" name="location" onchange="this.form.submit()">
+    <option value="">All locations</option>
+    {% for loc in locations %}
+      <option value="{{ loc.id }}" {% if loc.id == selected_location %}selected{% endif %}>{{ loc.name }} ({{ loc.short_code }})</option>
+    {% endfor %}
+  </select>
+  <span style="margin-left:auto;display:flex;gap:14px;font-size:12.5px;color:var(--muted)">
+    <span><span class="cap primary">Primary</span> independent</span>
+    <span><span class="cap backup">Backup</span> can cover</span>
+    <span><span class="cap training">Training</span></span>
+  </span>
+</form>
+
+<div class="card">
+  <div class="card-body flush">
+    {% if rows and procedures %}
+    <div class="table-wrap"><table class="data matrix">
+      <thead>
+        <tr>
+          <th>Physicist</th>
+          {% for proc in procedures %}<th style="text-align:center" title="{{ proc.name }}">{{ proc }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>
+            <strong>{{ row.physicist.display_name }}</strong>
+            <div class="li-desc">{{ row.physicist.get_role_display }}{% if row.physicist.primary_location %} · {{ row.physicist.primary_location.short_code }}{% endif %}</div>
+          </td>
+          {% for cap in row.cells %}
+            <td class="cell">
+              {% if cap %}
+                <span class="cap {{ cap.level }}" {% if cap.notes %}title="{{ cap.notes }}"{% endif %}>{{ cap.get_level_display|truncatewords:1|cut:" …" }}</span>
+                {% if cap.expires_on %}<div class="li-desc" style="font-size:11px">exp {{ cap.expires_on|date:"n/y" }}</div>{% endif %}
+              {% else %}
+                <span class="cap none">—</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="empty">The matrix is empty.
+      <div class="hint">Add physicists, procedures, and capabilities in the <a href="{% url 'admin:coverage_physicist_changelist' %}">site admin</a>, or run <span class="code">python manage.py seed_demo</span>.</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

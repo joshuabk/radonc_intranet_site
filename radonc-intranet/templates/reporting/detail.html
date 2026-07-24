@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ report.name }} · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Reporting · {{ report.get_source_display }}</div>
+  <h1>{{ report.name }}</h1>
+  {% if report.description %}<p class="sub">{{ report.description }}</p>{% endif %}
+</div>
+
+<div class="card">
+  <div class="card-body">
+    {% if report.status == "live" and source_connected %}
+      <p>This report is live. Parameter form and results rendering are implemented per-report in
+      <span class="code">apps/reporting/queries/{{ report.slug }}.py</span>.</p>
+    {% elif report.status == "live" %}
+      <p><span class="dot off"></span>The <strong>{{ report.get_source_display }}</strong> database connection is not configured on this server yet.
+      Once a read-only login is provisioned and the environment variables are set (see <span class="code">docs/REPORTING.md</span>), this report will run here.</p>
+    {% else %}
+      <p><span class="badge gold">{{ report.get_status_display }}</span></p>
+      <p>This report is registered but not yet implemented. When it goes live, results will display on this page and every run will be recorded in the audit log.</p>
+    {% endif %}
+    <p style="margin-bottom:0"><a class="btn ghost small" href="{% url 'reporting:list' %}">← All reports</a></p>
+  </div>
+</div>
+{% endblock %}

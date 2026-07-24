@@ -1,0 +1,10 @@
+Django>=5.2,<6.1
+whitenoise>=6.6          # static file serving without a separate web server config
+gunicorn>=22.0 ; sys_platform != "win32"   # production WSGI server (Linux)
+waitress>=3.0 ; sys_platform == "win32"    # production WSGI server (Windows)
+
+# --- Optional: enable when wiring up real integrations -------------------
+# mssql-django>=1.5      # ARIA / MOSAIQ read-only SQL Server connections
+# pyodbc>=5.0
+# django-auth-ldap>=4.8  # Active Directory single sign-on
+# psycopg[binary]>=3.1   # PostgreSQL application database

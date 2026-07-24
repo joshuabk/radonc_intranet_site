@@ -1,0 +1,17 @@
+<div class="linkrow">
+  <div class="li-icon"><svg><use href="#icon-{{ link.icon|default:'link' }}"/></svg></div>
+  <div class="li-main">
+    {% if link.is_unc_path %}
+      <span class="li-main"><strong>{{ link.title }}</strong></span>
+      <div class="li-path">{{ link.url }}</div>
+    {% else %}
+      <a class="title" href="{{ link.url }}" {% if link.open_in_new_tab %}target="_blank" rel="noopener"{% endif %}>{{ link.title }}</a>
+      {% if link.description %}<div class="li-desc">{{ link.description }}</div>{% endif %}
+    {% endif %}
+  </div>
+  {% if link.is_unc_path %}
+    <button class="copy-btn" type="button" data-copy="{{ link.url }}">Copy path</button>
+  {% elif link.open_in_new_tab %}
+    <svg style="width:14px;height:14px;color:var(--muted)"><use href="#icon-external"/></svg>
+  {% endif %}
+</div>

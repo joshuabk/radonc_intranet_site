@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Search · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Search</div>
+  <h1>{% if q %}Results for “{{ q }}”{% else %}Search the intranet{% endif %}</h1>
+</div>
+
+{% if q %}
+<div class="grid cols-2">
+  <div class="card">
+    <div class="card-head"><h2>Links ({{ links|length }})</h2></div>
+    <div class="card-body flush">
+      {% for link in links %}
+        {% include "linkhub/_linkrow.html" %}
+      {% empty %}
+        <div class="empty">No links matched.</div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><h2>Contacts ({{ contacts|length }})</h2></div>
+    <div class="card-body flush">
+      {% if contacts %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Name</th><th>Org</th><th>Phone</th></tr></thead>
+        <tbody>
+        {% for c in contacts %}
+          <tr><td><a href="{% url 'contacts:list' %}?q={{ c.name|urlencode }}">{{ c.name }}</a></td><td>{{ c.organization }}</td><td class="code">{{ c.phone }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table></div>
+      {% else %}
+        <div class="empty">No contacts matched.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="card"><div class="empty">Type a search above to find links and service contacts.</div></div>
+{% endif %}
+{% endblock %}

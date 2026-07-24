@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Service Contacts · {{ SITE_NAME }}{% endblock %}
+{% block content %}
+<div class="page-head">
+  <div class="eyebrow">Service contacts</div>
+  <h1>Service engineers &amp; support</h1>
+  <p class="sub">Field service engineers, vendor support lines, and after-hours numbers by system and site.</p>
+</div>
+
+<form class="filterbar" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Filter by name, vendor, or equipment…" style="min-width:300px">
+  <button class="btn primary small" type="submit">Filter</button>
+  {% if q %}<a class="btn ghost small" href="{% url 'contacts:list' %}">Clear</a>{% endif %}
+</form>
+
+<div class="card">
+  <div class="card-body flush">
+    {% if contacts %}
+    <div class="table-wrap"><table class="data">
+      <thead>
+        <tr><th>Name</th><th>Type</th><th>Covers</th><th>Sites</th><th>Phone</th><th>After hours</th><th>Email</th></tr>
+      </thead>
+      <tbody>
+        {% for c in contacts %}
+        <tr>
+          <td>
+            <strong>{{ c.name }}</strong>
+            {% if c.organization %}<div class="li-desc">{{ c.organization }}</div>{% endif %}
+            {% if c.support_portal_url %}<div><a href="{{ c.support_portal_url }}" target="_blank" rel="noopener" style="font-size:12.5px">Support portal ↗</a></div>{% endif %}
+          </td>
+          <td><span class="badge gray">{{ c.get_kind_display }}</span></td>
+          <td>{{ c.systems|default:"—" }}</td>
+          <td>{% for loc in c.locations.all %}<span class="badge loc">{{ loc.short_code }}</span> {% empty %}—{% endfor %}</td>
+          <td class="code">{{ c.phone|default:"—" }}</td>
+          <td class="code">{{ c.after_hours_phone|default:"—" }}</td>
+          <td>{% if c.email %}<a href="mailto:{{ c.email }}">{{ c.email }}</a>{% else %}—{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table></div>
+    {% else %}
+    <div class="empty">No contacts{% if q %} match “{{ q }}”{% endif %}.
+      <div class="hint">Add them in the <a href="{% url 'admin:contacts_servicecontact_changelist' %}">site admin</a>.</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
