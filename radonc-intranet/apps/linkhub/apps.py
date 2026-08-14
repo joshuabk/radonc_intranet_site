@@ -11,7 +11,7 @@ class LinkhubConfig(AppConfig):
         registry.register(Feature(
             slug="linkhub",
             title="Link Hub",
-            description="One place for ARIA, MOSAIQ, Citrix, SharePoint, the P: drive, LucidDoc policies, forms, and reports.",
+            description="Application and document links",
             url_name="linkhub:hub",
             icon="link",
             order=10,

@@ -35,7 +35,7 @@ DEBUG = False  # overridden in dev.py
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
 
 SITE_NAME = env("SITE_NAME", "Radiation Oncology Intranet")
-ORG_NAME = env("ORG_NAME", "Hospital System")
+ORG_NAME = env("ORG_NAME", "Northside Hospital")
 
 # ---------------------------------------------------------------------------
 # Applications

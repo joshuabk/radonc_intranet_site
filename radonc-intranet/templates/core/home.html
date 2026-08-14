@@ -4,9 +4,8 @@
 {% block content %}
 
 <div class="page-head">
-  <div class="eyebrow">Department home</div>
   <h1>Good {% now "G" as hour %}{% if hour < "12" %}morning{% elif hour < "17" %}afternoon{% else %}evening{% endif %}, {{ user.first_name|default:user.username }}</h1>
-  <p class="sub">{% now "l, F j, Y" %} — your launchpad for clinical systems, coverage, and today's physics work.</p>
+  <p class="sub">{% now "l, F j, Y" %}</p>
 </div>
 
 {% if announcements %}
@@ -107,7 +106,7 @@
   </div>
 </div>
 
-<div class="page-head"><div class="eyebrow">Everything on this site</div></div>
+<div class="page-head"><div class="eyebrow">Sections</div></div>
 <div class="grid cols-3">
   {% for f in features %}
     <a class="tile" href="{% url f.url_name %}">
