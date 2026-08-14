@@ -37,11 +37,24 @@ class Feature:
     section: str = "Workspace" # sidebar grouping header
     required_group: str | None = None   # group name; None = all signed-in staff
     staff_only: bool = False
+    public: bool = False       # visible to signed-out visitors even when
+                               # REQUIRE_LOGIN is on; the feature's own views
+                               # must also be marked @login_not_required
     nav_items: list[NavItem] = field(default_factory=list)
 
     def visible_to(self, user) -> bool:
         if not user.is_authenticated:
-            return False
+            # A gated feature is never shown to signed-out visitors.
+            if self.staff_only or self.required_group:
+                return False
+            # public=True features are always shown (e.g. the Link Hub).
+            if self.public:
+                return True
+            # Otherwise they are shown only while the site-wide login
+            # requirement is switched off (REQUIRE_LOGIN = False).
+            from django.conf import settings
+
+            return not getattr(settings, "REQUIRE_LOGIN", True)
         if self.staff_only and not user.is_staff:
             return False
         if self.required_group and not user.is_superuser:

@@ -70,12 +70,27 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    # Entire intranet requires login by default. Views can opt out with
-    # @login_not_required (django.contrib.auth.decorators).
-    "django.contrib.auth.middleware.LoginRequiredMiddleware",
+    # Enforces the REQUIRE_LOGIN switch below.
+    "apps.core.middleware.LoginRequiredIfEnabledMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# ---------------------------------------------------------------------------
+# Site-wide login requirement — flip this on or off here.
+#
+#   REQUIRE_LOGIN = True   -> every page requires sign-in.
+#   REQUIRE_LOGIN = False  -> the whole site is open to anyone who can reach
+#                             it. /admin/ always keeps its own login.
+#
+# Either way, individual views marked @login_not_required stay public (the
+# Link Hub is marked this way), and features registered with public=True stay
+# visible in the nav to signed-out visitors.
+#
+# The default below can also be overridden per-environment by setting the
+# REQUIRE_LOGIN environment variable (true/false) without editing this file.
+# ---------------------------------------------------------------------------
+REQUIRE_LOGIN = env_bool("REQUIRE_LOGIN", False)
 
 ROOT_URLCONF = "config.urls"
 

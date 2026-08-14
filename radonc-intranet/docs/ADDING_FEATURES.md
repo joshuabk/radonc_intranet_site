@@ -55,6 +55,7 @@ Use the existing CSS classes (`card`, `table`, `badge`, `btn`, `page-head`) in `
 ## 4. Optional pieces
 
 - **Group gating:** set `required_group="Physics"` in the Feature; also enforce in views with `@user_passes_test` (see `apps/reporting/views.py` for the pattern). The registry handles hiding the nav; the decorator handles the actual security.
+- **Public (no login) features:** set `public=True` in the Feature *and* decorate its views with `@login_not_required` (see `apps/linkhub` for the pattern). Both are needed: the flag keeps it in the nav for signed-out visitors, the decorator lets the request past the login middleware. See `docs/AUTHENTICATION.md`.
 - **Sub-navigation:** pass `nav_items=[("qa:daily", "Daily QA"), ("qa:trends", "Trends")]` to `Feature` for sidebar sub-links.
 - **Icons:** add a new `<symbol>` to `templates/core/_icons.html` (inline SVG, no external requests).
 - **Home tile:** automatic — every registered feature gets a tile unless the user lacks its `required_group`.

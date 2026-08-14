@@ -1,6 +1,26 @@
 # Authentication
 
-Out of the box the site uses Django's built-in user accounts (`/admin/` to create users, `bootstrap_site` to create groups). Every page requires login via `LoginRequiredMiddleware`. For a hospital deployment you'll almost certainly want Active Directory.
+Out of the box the site uses Django's built-in user accounts (`/admin/` to create users, `bootstrap_site` to create groups). For a hospital deployment you'll almost certainly want Active Directory.
+
+## Turning the login requirement on and off
+
+Site-wide login is controlled by the `REQUIRE_LOGIN` setting in `config/settings/base.py`:
+
+- `REQUIRE_LOGIN = True` — every page requires sign-in, except the always-public pages below.
+- `REQUIRE_LOGIN = False` — the whole site is open to anyone who can reach it. `/admin/` always requires login regardless.
+
+Change the default in `base.py` (`env_bool("REQUIRE_LOGIN", False)` — the second argument is the default), or set a `REQUIRE_LOGIN=true`/`false` environment variable per machine (e.g. IIS app settings) to override without editing code. Restart the server after changing it.
+
+Enforcement is `apps.core.middleware.LoginRequiredIfEnabledMiddleware`, a thin subclass of Django's `LoginRequiredMiddleware` that reads the setting per request.
+
+## Always-public pages
+
+The **Link Hub** (`/links/`) is public in both modes. Two pieces make that work, and a new public feature needs both:
+
+1. `@login_not_required` on the view (`apps/linkhub/views.py`) — lets the request through the middleware.
+2. `public=True` on the registered `Feature` (`apps/linkhub/apps.py`) — keeps it in the sidebar/home tiles for signed-out visitors.
+
+Gated features (`required_group` or `staff_only`) are never shown to signed-out visitors, so an anonymous visitor on `/links/` sees only the Link Hub in the nav — Reports and the rest stay hidden until they sign in.
 
 ## Active Directory via LDAP (django-auth-ldap)
 

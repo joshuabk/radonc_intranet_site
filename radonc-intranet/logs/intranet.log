@@ -1,3 +1,13 @@
 2026-06-11 17:04:38,995 INFO django.utils.autoreload Watching for file changes with StatReloader
 2026-06-11 17:13:05,343 INFO django.utils.autoreload Watching for file changes with StatReloader
 2026-06-11 17:16:15,733 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-08-14 11:15:35,315 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-08-14 11:19:36,050 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-08-14 11:21:41,745 INFO django.utils.autoreload C:\Projects\radonc_intranet_site\radonc-intranet\config\settings\base.py changed, reloading.
+2026-08-14 11:21:43,537 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-08-14 11:24:32,260 INFO django.utils.autoreload C:\Projects\radonc_intranet_site\radonc-intranet\config\settings\base.py changed, reloading.
+2026-08-14 11:24:33,986 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-08-14 11:32:35,327 INFO django.utils.autoreload C:\Projects\radonc_intranet_site\radonc-intranet\apps\core\registry.py changed, reloading.
+2026-08-14 11:32:37,167 INFO django.utils.autoreload Watching for file changes with StatReloader
+2026-08-14 11:47:25,548 INFO django.utils.autoreload C:\Projects\radonc_intranet_site\radonc-intranet\config\settings\base.py changed, reloading.
+2026-08-14 11:47:27,814 INFO django.utils.autoreload Watching for file changes with StatReloader

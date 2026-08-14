@@ -16,4 +16,8 @@ class LinkhubConfig(AppConfig):
             icon="link",
             order=10,
             section="Workspace",
+            # The Link Hub is open to everyone -- it stays visible in the nav
+            # and reachable even when REQUIRE_LOGIN is switched on. Its view
+            # is marked @login_not_required to match (see views.py).
+            public=True,
         ))
