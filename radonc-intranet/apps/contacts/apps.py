@@ -15,5 +15,6 @@ class ContactsConfig(AppConfig):
             url_name="contacts:list",
             icon="phone",
             order=20,
+            hidden=True,  # not functional yet; remove to show in nav/home
             section="Workspace",
         ))

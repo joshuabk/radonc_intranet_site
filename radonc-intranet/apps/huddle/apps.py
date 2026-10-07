@@ -15,5 +15,6 @@ class HuddleConfig(AppConfig):
             url_name="huddle:board",
             icon="monitor",
             order=40,
+            hidden=True,  # not functional yet; remove to show in nav/home
             section="Operations",
         ))

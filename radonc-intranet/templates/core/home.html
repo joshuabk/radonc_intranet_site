@@ -43,7 +43,9 @@
 </div>
 {% endif %}
 
+{% if "coverage" in feature_slugs or "huddle" in feature_slugs %}
 <div class="grid cols-2" style="margin-bottom:18px">
+  {% if "coverage" in feature_slugs %}
   <div class="card">
     <div class="card-head">
       <h2><span class="dot on"></span>Coverage today</h2>
@@ -70,7 +72,9 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
 
+  {% if "huddle" in feature_slugs %}
   <div class="card">
     <div class="card-head">
       <h2>This week's huddle</h2>
@@ -104,7 +108,9 @@
       {% endif %}
     </div>
   </div>
+  {% endif %}
 </div>
+{% endif %}
 
 <div class="page-head"><div class="eyebrow">Sections</div></div>
 <div class="grid cols-3">

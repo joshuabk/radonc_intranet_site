@@ -37,12 +37,16 @@ class Feature:
     section: str = "Workspace" # sidebar grouping header
     required_group: str | None = None   # group name; None = all signed-in staff
     staff_only: bool = False
+    hidden: bool = False       # True = not yet live: hidden from the sidebar
+                               # and home page for everyone (URLs still work)
     public: bool = False       # visible to signed-out visitors even when
                                # REQUIRE_LOGIN is on; the feature's own views
                                # must also be marked @login_not_required
     nav_items: list[NavItem] = field(default_factory=list)
 
     def visible_to(self, user) -> bool:
+        if self.hidden:
+            return False
         if not user.is_authenticated:
             # A gated feature is never shown to signed-out visitors.
             if self.staff_only or self.required_group:

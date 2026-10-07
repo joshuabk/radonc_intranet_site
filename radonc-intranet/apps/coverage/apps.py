@@ -15,6 +15,7 @@ class CoverageConfig(AppConfig):
             url_name="coverage:home",
             icon="calendar",
             order=30,
+            hidden=True,  # not functional yet; remove to show in nav/home
             section="Operations",
             nav_items=[NavItem("Coverage matrix", "coverage:matrix")],
         ))
